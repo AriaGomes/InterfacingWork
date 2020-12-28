@@ -1,0 +1,357 @@
+[
+    {
+        "id": "de252339.f0fee",
+        "type": "tab",
+        "label": "Toggle LED(PBS)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "28044630.6d623a",
+        "type": "arduino in",
+        "z": "de252339.f0fee",
+        "name": "PBS (Pin 15)",
+        "pin": "15",
+        "state": "INPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 350,
+        "y": 680,
+        "wires": [
+            [
+                "bd7da226.b9747"
+            ]
+        ]
+    },
+    {
+        "id": "19471ff3.c16ce",
+        "type": "arduino out",
+        "z": "de252339.f0fee",
+        "name": "Red Pin (12)",
+        "pin": "12",
+        "state": "OUTPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1690,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "85fb5569.ea2cc8",
+        "type": "arduino out",
+        "z": "de252339.f0fee",
+        "name": "Green Pin (2)",
+        "pin": "2",
+        "state": "OUTPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1700,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "2bbdd96e.d7fd36",
+        "type": "arduino out",
+        "z": "de252339.f0fee",
+        "name": "Blue Pin (3)",
+        "pin": "3",
+        "state": "OUTPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1690,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "bd7da226.b9747",
+        "type": "debounce",
+        "z": "de252339.f0fee",
+        "time": "50",
+        "name": "50ms",
+        "x": 510,
+        "y": 680,
+        "wires": [
+            [
+                "1053210e.15ceef"
+            ]
+        ]
+    },
+    {
+        "id": "1053210e.15ceef",
+        "type": "switch",
+        "z": "de252339.f0fee",
+        "name": "PBS Pressed",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 700,
+        "y": 680,
+        "wires": [
+            [
+                "657ab791.434998"
+            ]
+        ]
+    },
+    {
+        "id": "657ab791.434998",
+        "type": "function",
+        "z": "de252339.f0fee",
+        "name": "Cycle Colors",
+        "func": "\n\nvar clickCount = flow.get(\"clickCount\");\n\nif(!clickCount)\n    clickCount = 0;\n\n\n\nif (clickCount ==3)\n    clickCount = 0;\nclickCount++;\nflow.set(\"clickCount\", clickCount);    \nmsg.payload = clickCount;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 890,
+        "y": 680,
+        "wires": [
+            [
+                "95a14dc1.7c225",
+                "fe816e1c.b7569"
+            ]
+        ]
+    },
+    {
+        "id": "95a14dc1.7c225",
+        "type": "debug",
+        "z": "de252339.f0fee",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1050,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "fe816e1c.b7569",
+        "type": "switch",
+        "z": "de252339.f0fee",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1140,
+        "y": 680,
+        "wires": [
+            [
+                "185aeae7.dd9e35",
+                "bb83de3b.67f5e"
+            ],
+            [
+                "6b8b48b3.22bad8",
+                "1a773128.bb35bf"
+            ],
+            [
+                "93ec66bf.a9d878",
+                "1aa146ec.529c59"
+            ]
+        ]
+    },
+    {
+        "id": "185aeae7.dd9e35",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 620,
+        "wires": [
+            [
+                "19471ff3.c16ce"
+            ]
+        ]
+    },
+    {
+        "id": "6b8b48b3.22bad8",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 660,
+        "wires": [
+            [
+                "19471ff3.c16ce"
+            ]
+        ]
+    },
+    {
+        "id": "1a773128.bb35bf",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 700,
+        "wires": [
+            [
+                "85fb5569.ea2cc8"
+            ]
+        ]
+    },
+    {
+        "id": "93ec66bf.a9d878",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 740,
+        "wires": [
+            [
+                "85fb5569.ea2cc8"
+            ]
+        ]
+    },
+    {
+        "id": "1aa146ec.529c59",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 780,
+        "wires": [
+            [
+                "2bbdd96e.d7fd36"
+            ]
+        ]
+    },
+    {
+        "id": "bb83de3b.67f5e",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 580,
+        "wires": [
+            [
+                "2bbdd96e.d7fd36"
+            ]
+        ]
+    },
+    {
+        "id": "8df1fb21.4d3ec8",
+        "type": "comment",
+        "z": "de252339.f0fee",
+        "name": "Toggle LED(PBS) - Tri-LED by Aria Gomes (gome0098@algonquinlive.com)",
+        "info": "",
+        "x": 590,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "4b03b7ae.c58338",
+        "type": "arduino-board",
+        "device": "COM3"
+    }
+]

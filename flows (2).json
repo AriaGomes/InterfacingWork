@@ -1,0 +1,1156 @@
+[
+    {
+        "id": "d0e01c4.e1e2ee",
+        "type": "tab",
+        "label": "Temperature Flow",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "e377dd17.2749d",
+        "type": "tab",
+        "label": "Temperature Flow",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "de252339.f0fee",
+        "type": "tab",
+        "label": "Toggle LED(PBS)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "4b03b7ae.c58338",
+        "type": "arduino-board",
+        "device": "COM3"
+    },
+    {
+        "id": "fe205248.f04ed",
+        "type": "ui_tab",
+        "name": "Geräte",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "65a72644.483318",
+        "type": "ui_group",
+        "name": "Virtuelle Taste BidCoS-RF:1",
+        "tab": "fe205248.f04ed",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ec91c2ab.641ce",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Convert Pin(A7) to Celcius",
+        "func": "var code = msg.payload;\nvar celsius;\n\nif (code <= 289) {\n    celsius = 5 + (code - 289) / 9.82;\n  }\n  if (code > 289 && code <= 342) {\n    celsius = 10 + (code - 342) / 10.60;\n  }\n  if (code > 342 && code <= 398) {\n    celsius = 15 + (code - 398) / 11.12;\n  }\n  if (code > 398 && code <= 455) {\n    celsius = 20 + (code - 455) / 11.36;\n  }\n  if (code > 455 && code <= 512) {\n    celsius = 25 + (code - 512) / 11.32;\n  }\n  if (code > 512 && code <= 566) {\n    celsius = 30 + (code - 566) / 11.00;\n  }\n  if (code > 566 && code <= 619) {\n    celsius = 35 + (code - 619) / 10.44;\n  }\n  if (code > 619 && code <= 667) {\n    celsius = 40 + (code - 667) / 9.73;\n  }\n  if (code > 667) {\n    celsius = 45 + (code - 712) / 8.90;\n  }\n\nmsg.payload = celsius;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 520,
+        "y": 340,
+        "wires": [
+            [
+                "c980b322.83aa2"
+            ]
+        ]
+    },
+    {
+        "id": "c980b322.83aa2",
+        "type": "rbe",
+        "z": "d0e01c4.e1e2ee",
+        "name": "block unless value change is great than 0.2",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 830,
+        "y": 340,
+        "wires": [
+            [
+                "eb7c7b9c.eeb4d8"
+            ]
+        ]
+    },
+    {
+        "id": "eb7c7b9c.eeb4d8",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "cache temperature",
+        "func": "flow.set(\"Temp\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1110,
+        "y": 340,
+        "wires": [
+            [
+                "c134a5c7.cfc3c8"
+            ]
+        ]
+    },
+    {
+        "id": "c134a5c7.cfc3c8",
+        "type": "debug",
+        "z": "d0e01c4.e1e2ee",
+        "name": "",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "b437c889.799a28",
+        "type": "arduino in",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Thermister (A0)",
+        "pin": "0",
+        "state": "ANALOG",
+        "arduino": "4b03b7ae.c58338",
+        "x": 300,
+        "y": 340,
+        "wires": [
+            [
+                "ec91c2ab.641ce"
+            ]
+        ]
+    },
+    {
+        "id": "7f8ddcf.90f8e24",
+        "type": "arduino in",
+        "z": "d0e01c4.e1e2ee",
+        "name": "PBS (Pin 3)",
+        "pin": "3",
+        "state": "PULLUP",
+        "arduino": "4b03b7ae.c58338",
+        "x": 230,
+        "y": 400,
+        "wires": [
+            [
+                "f2edae75.8c0f8"
+            ]
+        ]
+    },
+    {
+        "id": "5492435b.6700ec",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Cycle PBS Click 1, 2, 3, 1...",
+        "func": "\n\nvar clickCount = flow.get(\"clickCount\");\n\nif(!clickCount)\n    clickCount = 0;\n\n\n\nif (clickCount == 4)\n    clickCount = 1;\nclickCount++;\nflow.set(\"clickCount\", clickCount);    \nmsg.payload = clickCount;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "7712abe8.5c0bd4"
+            ]
+        ]
+    },
+    {
+        "id": "7712abe8.5c0bd4",
+        "type": "switch",
+        "z": "d0e01c4.e1e2ee",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "4",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 930,
+        "y": 400,
+        "wires": [
+            [
+                "e9974712.90a3d8"
+            ],
+            [
+                "cd79f76f.fcdf88"
+            ],
+            [
+                "f410e040.5a061"
+            ]
+        ]
+    },
+    {
+        "id": "e9974712.90a3d8",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Get cached temperature",
+        "func": "msg.payload = flow.get(\"Temp\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 600,
+        "wires": [
+            [
+                "a85b368a.6350e8"
+            ]
+        ]
+    },
+    {
+        "id": "cd79f76f.fcdf88",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Get cached temperature",
+        "func": "msg.payload = flow.get(\"Temp\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 680,
+        "wires": [
+            [
+                "dc27b029.82f81"
+            ]
+        ]
+    },
+    {
+        "id": "f410e040.5a061",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Get cached temperature",
+        "func": "msg.payload = flow.get(\"Temp\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 760,
+        "wires": [
+            [
+                "467afe04.a2f07"
+            ]
+        ]
+    },
+    {
+        "id": "a85b368a.6350e8",
+        "type": "template",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Tempurature: Celcius",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Tempurature: {{payload}}° Celsius",
+        "output": "str",
+        "x": 900,
+        "y": 600,
+        "wires": [
+            [
+                "c2bd573f.6905b8"
+            ]
+        ]
+    },
+    {
+        "id": "9fdc7d5.661e88",
+        "type": "template",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Tempurature: Farenheit",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Tempurature: {{payload}}° Farenheit",
+        "output": "str",
+        "x": 910,
+        "y": 680,
+        "wires": [
+            [
+                "d03b2ce5.94de6"
+            ]
+        ]
+    },
+    {
+        "id": "df63e9e5.4e7f18",
+        "type": "template",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Tempurature: Kelvin",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Tempurature: {{payload}}° Kelvin",
+        "output": "str",
+        "x": 900,
+        "y": 760,
+        "wires": [
+            [
+                "833dbf3f.b0f3f"
+            ]
+        ]
+    },
+    {
+        "id": "dc27b029.82f81",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Convert Celsius to Farenheit",
+        "func": "var code = msg.payload;\n\ncode = code * 1.8 + 32\nmsg.payload = code;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 620,
+        "y": 680,
+        "wires": [
+            [
+                "9fdc7d5.661e88"
+            ]
+        ]
+    },
+    {
+        "id": "467afe04.a2f07",
+        "type": "function",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Convert Celsius to Kelvin",
+        "func": "var code = msg.payload;\n\ncode += 273.15\nmsg.payload = code;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 610,
+        "y": 760,
+        "wires": [
+            [
+                "df63e9e5.4e7f18"
+            ]
+        ]
+    },
+    {
+        "id": "c2bd573f.6905b8",
+        "type": "debug",
+        "z": "d0e01c4.e1e2ee",
+        "name": "display: Tempurature in Celsius",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1290,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "d03b2ce5.94de6",
+        "type": "debug",
+        "z": "d0e01c4.e1e2ee",
+        "name": "display: Tempurature in Farhenheit",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "833dbf3f.b0f3f",
+        "type": "debug",
+        "z": "d0e01c4.e1e2ee",
+        "name": "display: Tempurature in Kelvin",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1290,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "f2edae75.8c0f8",
+        "type": "debounce",
+        "z": "d0e01c4.e1e2ee",
+        "time": "500",
+        "name": "Debounce 500ms",
+        "x": 430,
+        "y": 400,
+        "wires": [
+            [
+                "5492435b.6700ec"
+            ]
+        ]
+    },
+    {
+        "id": "44f624fb.328ccc",
+        "type": "comment",
+        "z": "d0e01c4.e1e2ee",
+        "name": "Tempurature Flow by Aria Gomes (gome0098@algonquinlive.com)",
+        "info": "",
+        "x": 460,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "468aff31.e7e58",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Convert Pin(A7) to Celcius",
+        "func": "var code = msg.payload;\nvar celsius;\n\nif (code <= 289) {\n    celsius = 5 + (code - 289) / 9.82;\n  }\n  if (code > 289 && code <= 342) {\n    celsius = 10 + (code - 342) / 10.60;\n  }\n  if (code > 342 && code <= 398) {\n    celsius = 15 + (code - 398) / 11.12;\n  }\n  if (code > 398 && code <= 455) {\n    celsius = 20 + (code - 455) / 11.36;\n  }\n  if (code > 455 && code <= 512) {\n    celsius = 25 + (code - 512) / 11.32;\n  }\n  if (code > 512 && code <= 566) {\n    celsius = 30 + (code - 566) / 11.00;\n  }\n  if (code > 566 && code <= 619) {\n    celsius = 35 + (code - 619) / 10.44;\n  }\n  if (code > 619 && code <= 667) {\n    celsius = 40 + (code - 667) / 9.73;\n  }\n  if (code > 667) {\n    celsius = 45 + (code - 712) / 8.90;\n  }\n\nmsg.payload = celsius;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 520,
+        "y": 340,
+        "wires": [
+            [
+                "a40a37c0.30f5d8"
+            ]
+        ]
+    },
+    {
+        "id": "a40a37c0.30f5d8",
+        "type": "rbe",
+        "z": "e377dd17.2749d",
+        "name": "block unless value change is great than 0.2",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 830,
+        "y": 340,
+        "wires": [
+            [
+                "ba417eb1.c94d2"
+            ]
+        ]
+    },
+    {
+        "id": "ba417eb1.c94d2",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "cache temperature",
+        "func": "flow.set(\"Temp\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 1110,
+        "y": 340,
+        "wires": [
+            [
+                "f688afd1.914af"
+            ]
+        ]
+    },
+    {
+        "id": "f688afd1.914af",
+        "type": "debug",
+        "z": "e377dd17.2749d",
+        "name": "",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "47a04217.8bca0c",
+        "type": "arduino in",
+        "z": "e377dd17.2749d",
+        "name": "Thermister (A0)",
+        "pin": "0",
+        "state": "ANALOG",
+        "arduino": "4b03b7ae.c58338",
+        "x": 300,
+        "y": 340,
+        "wires": [
+            [
+                "468aff31.e7e58"
+            ]
+        ]
+    },
+    {
+        "id": "1041f143.c2460f",
+        "type": "arduino in",
+        "z": "e377dd17.2749d",
+        "name": "PBS (Pin 3)",
+        "pin": "3",
+        "state": "PULLUP",
+        "arduino": "4b03b7ae.c58338",
+        "x": 230,
+        "y": 400,
+        "wires": [
+            [
+                "b25d8826.18df28"
+            ]
+        ]
+    },
+    {
+        "id": "9fc6bf90.ae87a",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Cycle PBS Click 1, 2, 3, 1...",
+        "func": "\n\nvar clickCount = flow.get(\"clickCount\");\n\nif(!clickCount)\n    clickCount = 0;\n\n\n\nif (clickCount == 4)\n    clickCount = 1;\nclickCount++;\nflow.set(\"clickCount\", clickCount);    \nmsg.payload = clickCount;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 660,
+        "y": 400,
+        "wires": [
+            [
+                "a89af04e.9358"
+            ]
+        ]
+    },
+    {
+        "id": "a89af04e.9358",
+        "type": "switch",
+        "z": "e377dd17.2749d",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "4",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 930,
+        "y": 400,
+        "wires": [
+            [
+                "75860286.3f27ac"
+            ],
+            [
+                "1e862588.16ed8a"
+            ],
+            [
+                "54e95880.7dac98"
+            ]
+        ]
+    },
+    {
+        "id": "75860286.3f27ac",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Get cached temperature",
+        "func": "msg.payload = flow.get(\"Temp\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 600,
+        "wires": [
+            [
+                "7c26366d.16b728"
+            ]
+        ]
+    },
+    {
+        "id": "1e862588.16ed8a",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Get cached temperature",
+        "func": "msg.payload = flow.get(\"Temp\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 680,
+        "wires": [
+            [
+                "b7179b00.96cc98"
+            ]
+        ]
+    },
+    {
+        "id": "54e95880.7dac98",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Get cached temperature",
+        "func": "msg.payload = flow.get(\"Temp\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 330,
+        "y": 760,
+        "wires": [
+            [
+                "491f97d5.65bbf8"
+            ]
+        ]
+    },
+    {
+        "id": "7c26366d.16b728",
+        "type": "template",
+        "z": "e377dd17.2749d",
+        "name": "Tempurature: Celcius",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Tempurature: {{payload}}° Celsius",
+        "output": "str",
+        "x": 900,
+        "y": 600,
+        "wires": [
+            [
+                "da50ee48.d6ea2"
+            ]
+        ]
+    },
+    {
+        "id": "236e4218.1f02ae",
+        "type": "template",
+        "z": "e377dd17.2749d",
+        "name": "Tempurature: Farenheit",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Tempurature: {{payload}}° Farenheit",
+        "output": "str",
+        "x": 910,
+        "y": 680,
+        "wires": [
+            [
+                "f39adec1.b842b"
+            ]
+        ]
+    },
+    {
+        "id": "145f3097.1a774f",
+        "type": "template",
+        "z": "e377dd17.2749d",
+        "name": "Tempurature: Kelvin",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "Tempurature: {{payload}}° Kelvin",
+        "output": "str",
+        "x": 900,
+        "y": 760,
+        "wires": [
+            [
+                "532298f6.7e56a8"
+            ]
+        ]
+    },
+    {
+        "id": "b7179b00.96cc98",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Convert Celsius to Farenheit",
+        "func": "var code = msg.payload;\n\ncode = code * 1.8 + 32\nmsg.payload = code;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 620,
+        "y": 680,
+        "wires": [
+            [
+                "236e4218.1f02ae"
+            ]
+        ]
+    },
+    {
+        "id": "491f97d5.65bbf8",
+        "type": "function",
+        "z": "e377dd17.2749d",
+        "name": "Convert Celsius to Kelvin",
+        "func": "var code = msg.payload;\n\ncode += 273.15\nmsg.payload = code;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 610,
+        "y": 760,
+        "wires": [
+            [
+                "145f3097.1a774f"
+            ]
+        ]
+    },
+    {
+        "id": "da50ee48.d6ea2",
+        "type": "debug",
+        "z": "e377dd17.2749d",
+        "name": "display: Tempurature in Celsius",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1290,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "f39adec1.b842b",
+        "type": "debug",
+        "z": "e377dd17.2749d",
+        "name": "display: Tempurature in Farhenheit",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "532298f6.7e56a8",
+        "type": "debug",
+        "z": "e377dd17.2749d",
+        "name": "display: Tempurature in Kelvin",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1290,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "b25d8826.18df28",
+        "type": "debounce",
+        "z": "e377dd17.2749d",
+        "time": "500",
+        "name": "Debounce 500ms",
+        "x": 430,
+        "y": 400,
+        "wires": [
+            [
+                "9fc6bf90.ae87a"
+            ]
+        ]
+    },
+    {
+        "id": "5b3b2375.2d4b3c",
+        "type": "comment",
+        "z": "e377dd17.2749d",
+        "name": "Tempurature Flow by Aria Gomes (gome0098@algonquinlive.com)",
+        "info": "",
+        "x": 460,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "28044630.6d623a",
+        "type": "arduino in",
+        "z": "de252339.f0fee",
+        "name": "PBS (Pin 15)",
+        "pin": "15",
+        "state": "INPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 350,
+        "y": 680,
+        "wires": [
+            [
+                "bd7da226.b9747"
+            ]
+        ]
+    },
+    {
+        "id": "19471ff3.c16ce",
+        "type": "arduino out",
+        "z": "de252339.f0fee",
+        "name": "Red Pin (12)",
+        "pin": "12",
+        "state": "OUTPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1690,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "85fb5569.ea2cc8",
+        "type": "arduino out",
+        "z": "de252339.f0fee",
+        "name": "Green Pin (2)",
+        "pin": "2",
+        "state": "OUTPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1700,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "2bbdd96e.d7fd36",
+        "type": "arduino out",
+        "z": "de252339.f0fee",
+        "name": "Blue Pin (3)",
+        "pin": "3",
+        "state": "OUTPUT",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1690,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "bd7da226.b9747",
+        "type": "debounce",
+        "z": "de252339.f0fee",
+        "time": "50",
+        "name": "50ms",
+        "x": 510,
+        "y": 680,
+        "wires": [
+            [
+                "1053210e.15ceef"
+            ]
+        ]
+    },
+    {
+        "id": "1053210e.15ceef",
+        "type": "switch",
+        "z": "de252339.f0fee",
+        "name": "PBS Pressed",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 700,
+        "y": 680,
+        "wires": [
+            [
+                "657ab791.434998"
+            ]
+        ]
+    },
+    {
+        "id": "657ab791.434998",
+        "type": "function",
+        "z": "de252339.f0fee",
+        "name": "Cycle Colors",
+        "func": "\n\nvar clickCount = flow.get(\"clickCount\");\n\nif(!clickCount)\n    clickCount = 0;\n\n\n\nif (clickCount ==3)\n    clickCount = 0;\nclickCount++;\nflow.set(\"clickCount\", clickCount);    \nmsg.payload = clickCount;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 890,
+        "y": 680,
+        "wires": [
+            [
+                "95a14dc1.7c225",
+                "fe816e1c.b7569"
+            ]
+        ]
+    },
+    {
+        "id": "95a14dc1.7c225",
+        "type": "debug",
+        "z": "de252339.f0fee",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1050,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "fe816e1c.b7569",
+        "type": "switch",
+        "z": "de252339.f0fee",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1140,
+        "y": 680,
+        "wires": [
+            [
+                "185aeae7.dd9e35",
+                "bb83de3b.67f5e"
+            ],
+            [
+                "6b8b48b3.22bad8",
+                "1a773128.bb35bf"
+            ],
+            [
+                "93ec66bf.a9d878",
+                "1aa146ec.529c59"
+            ]
+        ]
+    },
+    {
+        "id": "185aeae7.dd9e35",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 620,
+        "wires": [
+            [
+                "19471ff3.c16ce"
+            ]
+        ]
+    },
+    {
+        "id": "6b8b48b3.22bad8",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 660,
+        "wires": [
+            [
+                "19471ff3.c16ce"
+            ]
+        ]
+    },
+    {
+        "id": "1a773128.bb35bf",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 700,
+        "wires": [
+            [
+                "85fb5569.ea2cc8"
+            ]
+        ]
+    },
+    {
+        "id": "93ec66bf.a9d878",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 740,
+        "wires": [
+            [
+                "85fb5569.ea2cc8"
+            ]
+        ]
+    },
+    {
+        "id": "1aa146ec.529c59",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn on",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 780,
+        "wires": [
+            [
+                "2bbdd96e.d7fd36"
+            ]
+        ]
+    },
+    {
+        "id": "bb83de3b.67f5e",
+        "type": "change",
+        "z": "de252339.f0fee",
+        "name": "Turn off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1340,
+        "y": 580,
+        "wires": [
+            [
+                "2bbdd96e.d7fd36"
+            ]
+        ]
+    },
+    {
+        "id": "8df1fb21.4d3ec8",
+        "type": "comment",
+        "z": "de252339.f0fee",
+        "name": "Toggle LED(PBS) - Tri-LED by Aria Gomes (gome0098@algonquinlive.com)",
+        "info": "",
+        "x": 590,
+        "y": 440,
+        "wires": []
+    }
+]

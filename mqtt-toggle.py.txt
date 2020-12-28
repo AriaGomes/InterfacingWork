@@ -1,0 +1,118 @@
+# Hybrid Activity 5 - Aria Gomes (040878659)
+
+import cayenne.client
+import pyfirmata
+
+# Cayenne authentication info. This should be obtained from the Cayenne Dashboard.
+MQTT_USERNAME = "62f11eb0-2d68-11eb-a2e4-b32ea624e442"
+MQTT_PASSWORD = "e2ee21cad56d6b42b09a2c0ab190f46e59cb5f8a"
+MQTT_CLIENT_ID = "32666d00-2dc6-11eb-a2e4-b32ea624e442"
+
+i = 0
+temp = 0
+timestamp = 0
+board = pyfirmata.Arduino('COM4')
+resistance = 0
+celsius = 0.0
+oldTemp = 0.0
+old_button_state = True
+clickButton = 1
+
+it = pyfirmata.util.Iterator(board)
+it.start()
+
+digital_input = board.get_pin('d:12:i')
+discreetLED = board.get_pin('d:11:o')
+analog_input = board.get_pin('a:0:i')
+onboardLED = board.get_pin('d:13:o')
+ledR = board.get_pin('d:9:p')
+ledG = board.get_pin('d:10:p')
+ledB = board.get_pin('d:6:p')
+colors = ["Red", "Green", "Blue"]
+
+
+# The callback for when a message is received from Cayenne.
+def on_message(message):
+    if int(message.channel) == 1:  # On Board LED
+        onboardLED.write(int(message.value))
+        client.virtualWrite(8, int(message.value))  # Toggles the 2 step widget
+
+    if int(message.channel) == 2:  # Discreet LED
+        discreetLED.write(int(message.value))
+        client.virtualWrite(2, int(message.value))
+
+    if int(message.channel) == 3 and clickButton == 1:  # Slider Red
+        ledR.mode = pyfirmata.PWM
+
+        ledR.write(int(message.value) / 255)
+        ledB.write(0)
+        ledG.write(0)
+        client.virtualWrite(3, int(message.value))
+
+    if int(message.channel) == 4 and clickButton == 2:  # Slider Green
+        ledG.write(int(message.value) / 255)
+        ledB.write(0)
+        ledR.write(0)
+        client.virtualWrite(4, int(message.value))
+
+    if int(message.channel) == 5 and clickButton == 3:  # Slider Blue
+        ledB.write(int(message.value) / 255)
+        ledR.write(0)
+        ledG.write(0)
+        client.virtualWrite(5, int(message.value))
+
+    print("message received: " + str(message))
+    # If there is an error processing the message return an error string, otherwise return nothing.
+
+
+client = cayenne.client.CayenneMQTTClient()
+client.on_message = on_message
+client.begin(MQTT_USERNAME, MQTT_PASSWORD, MQTT_CLIENT_ID)
+# For a secure connection use port 8883 when calling client.begin:
+# client.begin(MQTT_USERNAME, MQTT_PASSWORD, MQTT_CLIENT_ID, port=8883)
+
+while True:
+    client.loop()
+    old_button_state = digital_input.read()
+    if old_button_state == 0:
+        if clickButton == 3:
+            clickButton = 0
+        clickButton += 1
+
+    print(colors[clickButton - 1] + ("    Count:" + str(clickButton)))  # important to see what pin/color you are on
+    # when using analog sliders
+
+    analog_value = analog_input.read()
+    if analog_value is not None:
+        temp = analog_value * 1023
+
+        if 289.00 >= temp:
+            celsius = 5 + (temp - 289) / 9.82
+
+        if 289.00 < temp <= 342.00:
+            celsius = 10 + (temp - 342) / 10.60
+
+        if 342.00 < temp <= 398.00:
+            celsius = 15 + (temp - 398) / 11.12
+
+        if 398.00 < temp <= 455.00:
+            celsius = 20 + (temp - 455) / 11.36
+
+        if 455.00 < temp <= 512.00:
+            celsius = 25 + (temp - 512) / 11.32
+
+        if 512.00 < temp <= 566.00:
+            celsius = 30 + (temp - 566) / 11.00
+
+        if 566.00 < temp <= 619.00:
+            celsius = 35 + (temp - 619) / 10.44
+
+        if 619.00 < temp <= 667.00:
+            celsius = 40 + (temp - 667) / 9.73
+
+        if temp > 667.00:
+            celsius = 45 + (temp - 712) / 8.90
+
+    if abs(oldTemp - celsius) >= 1:
+        oldTemp = celsius
+        client.celsiusWrite(7, celsius)

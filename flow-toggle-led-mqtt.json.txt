@@ -1,0 +1,322 @@
+[
+    {
+        "id": "ad84415a.64486",
+        "type": "tab",
+        "label": "Toggle LED (MQTT)",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "7a0c8b9d.a5caf4",
+        "type": "mqtt in",
+        "z": "ad84415a.64486",
+        "name": "From MQTT Server [Cayenne]: Channel 1",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/cmd/1",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "abf104c4.8cee68",
+        "x": 200,
+        "y": 180,
+        "wires": [
+            [
+                "9d244b80.0add58"
+            ]
+        ]
+    },
+    {
+        "id": "492910c0.827d5",
+        "type": "comment",
+        "z": "ad84415a.64486",
+        "name": "Toggle LED (MQTT) by Aria Gomes (040878659) (gome0098@algonquinlive.com)",
+        "info": "",
+        "x": 380,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "b579a5b3.c39478",
+        "type": "comment",
+        "z": "ad84415a.64486",
+        "name": "Pre-Req: Teensy is running Standard Firmata Plus",
+        "info": "",
+        "x": 290,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "988c2fd1.28f1f",
+        "type": "mqtt in",
+        "z": "ad84415a.64486",
+        "name": "From MQTT Server [Cayenne]: Channel 2",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/cmd/2",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "abf104c4.8cee68",
+        "x": 200,
+        "y": 540,
+        "wires": [
+            [
+                "271ee8d6.5d4e08"
+            ]
+        ]
+    },
+    {
+        "id": "1656ff7b.d1d151",
+        "type": "mqtt in",
+        "z": "ad84415a.64486",
+        "name": "From MQTT Server [Cayenne]: Channel 3",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/cmd/3",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "abf104c4.8cee68",
+        "x": 180,
+        "y": 780,
+        "wires": [
+            [
+                "384046ef.6b28aa"
+            ]
+        ]
+    },
+    {
+        "id": "6465dbf2.add714",
+        "type": "mqtt in",
+        "z": "ad84415a.64486",
+        "name": "From MQTT Server [Cayenne]: Channel 4",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/cmd/4",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "abf104c4.8cee68",
+        "x": 180,
+        "y": 1000,
+        "wires": [
+            [
+                "f492c83e.06ece8",
+                "23cd189a.e91668",
+                "caa1d63c.323898"
+            ]
+        ]
+    },
+    {
+        "id": "f492c83e.06ece8",
+        "type": "function",
+        "z": "ad84415a.64486",
+        "name": "Fade blue",
+        "func": "var Blue = msg.payload.split(\",\");\nvar blueValue = flow.get(\"Blue\") || 0;\nmsg.payload = parseInt(Number(blueValue) * (Blue[1] / 100));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 500,
+        "y": 920,
+        "wires": [
+            [
+                "41f0e5e1.5d17dc"
+            ]
+        ]
+    },
+    {
+        "id": "23cd189a.e91668",
+        "type": "function",
+        "z": "ad84415a.64486",
+        "name": "Fade green",
+        "func": "var Green = msg.payload.split(\",\");\nvar greenValue = flow.get(\"Green\") || 0;\n\nmsg.payload = parseInt(Number(greenValue)) * (Green[1] / 100);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 510,
+        "y": 960,
+        "wires": [
+            [
+                "8ed38197.e2915"
+            ]
+        ]
+    },
+    {
+        "id": "caa1d63c.323898",
+        "type": "function",
+        "z": "ad84415a.64486",
+        "name": "Fade red",
+        "func": "var Red = msg.payload.split(\",\");\nvar redValue = flow.get(\"Red\") || 0;\n\nmsg.payload = parseInt(Number(redValue) * (Red[1] / 100));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 500,
+        "y": 1000,
+        "wires": [
+            [
+                "52f18b0.1881074"
+            ]
+        ]
+    },
+    {
+        "id": "9d244b80.0add58",
+        "type": "function",
+        "z": "ad84415a.64486",
+        "name": "Cache Red",
+        "func": "var Red = msg.payload.split(\",\");\nflow.set(\"Red\", Red[1]);\nmsg.payload = Red[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 590,
+        "y": 180,
+        "wires": [
+            [
+                "52f18b0.1881074",
+                "9265c7a9.0507b8"
+            ]
+        ]
+    },
+    {
+        "id": "271ee8d6.5d4e08",
+        "type": "function",
+        "z": "ad84415a.64486",
+        "name": "Cache Green",
+        "func": "var Green = msg.payload.split(\",\");\nflow.set(\"Green\", Green[1]);\nmsg.payload = Green[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 570,
+        "y": 540,
+        "wires": [
+            [
+                "5947dfe6.f0eec",
+                "8ed38197.e2915"
+            ]
+        ]
+    },
+    {
+        "id": "52f18b0.1881074",
+        "type": "arduino out",
+        "z": "ad84415a.64486",
+        "name": "Red (Pin: 3)",
+        "pin": "3",
+        "state": "PWM",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1010,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "8ed38197.e2915",
+        "type": "arduino out",
+        "z": "ad84415a.64486",
+        "name": "Green: (Pin: 5)",
+        "pin": "5",
+        "state": "PWM",
+        "arduino": "4b03b7ae.c58338",
+        "x": 1000,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "41f0e5e1.5d17dc",
+        "type": "arduino out",
+        "z": "ad84415a.64486",
+        "name": "Blue: (Pin: 4)",
+        "pin": "4",
+        "state": "PWM",
+        "arduino": "4b03b7ae.c58338",
+        "x": 990,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "9265c7a9.0507b8",
+        "type": "mqtt out",
+        "z": "ad84415a.64486",
+        "name": "To MQTT Server [Cayenne]: Channel 1",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/data/1",
+        "qos": "1",
+        "retain": "",
+        "broker": "abf104c4.8cee68",
+        "x": 1090,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5947dfe6.f0eec",
+        "type": "mqtt out",
+        "z": "ad84415a.64486",
+        "name": "To MQTT Server [Cayenne]: Channel 2",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/data/2",
+        "qos": "1",
+        "retain": "",
+        "broker": "abf104c4.8cee68",
+        "x": 1070,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "a90e9425.7ad2f8",
+        "type": "mqtt out",
+        "z": "ad84415a.64486",
+        "name": "To MQTT Server [Cayenne]: Channel 3",
+        "topic": "v1/62f11eb0-2d68-11eb-a2e4-b32ea624e442/things/40eb21a0-2d7f-11eb-883c-638d8ce4c23d/data/3",
+        "qos": "1",
+        "retain": "",
+        "broker": "abf104c4.8cee68",
+        "x": 1070,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "612401e3.b6803",
+        "type": "comment",
+        "z": "ad84415a.64486",
+        "name": "LED Dimmer",
+        "info": "",
+        "x": 510,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "384046ef.6b28aa",
+        "type": "function",
+        "z": "ad84415a.64486",
+        "name": "Cache Blue",
+        "func": "var Blue = msg.payload.split(\",\");\nflow.set(\"Blue\", Blue[1]);\nmsg.payload = Blue[1];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 550,
+        "y": 780,
+        "wires": [
+            [
+                "a90e9425.7ad2f8",
+                "41f0e5e1.5d17dc"
+            ]
+        ]
+    },
+    {
+        "id": "abf104c4.8cee68",
+        "type": "mqtt-broker",
+        "name": "mqtt.mydevices.com in",
+        "broker": "mqtt.mydevices.com",
+        "port": "1883",
+        "clientid": "40eb21a0-2d7f-11eb-883c-638d8ce4c23d",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "4b03b7ae.c58338",
+        "type": "arduino-board",
+        "device": "COM4"
+    }
+]
